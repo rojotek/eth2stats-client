@@ -59,7 +59,13 @@ func (s *TekuHTTPClient) GetPeerCount() (int64, error) {
 }
 
 func (s *TekuHTTPClient) GetAttestationsInPoolCount() (int64, error) {
-	return 0, beacon.NotImplemented
+    path := fmt.Sprintf("node/pending_attestation_count")
+	attestationCount := new(int64)
+	_, err := s.api.New().Get(path).ReceiveSuccess(attestationCount)
+	if err != nil {
+		return 0, err
+	}
+	return *attestationCount, nil
 }
 
 func (s *TekuHTTPClient) GetSyncStatus() (bool, error) {
