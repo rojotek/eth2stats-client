@@ -59,11 +59,14 @@ func (s *TekuHTTPClient) GetPeerCount() (int64, error) {
 }
 
 func (s *TekuHTTPClient) GetAttestationsInPoolCount() (int64, error) {
-    path := fmt.Sprintf("node/pending_attestation_count")
+	path := fmt.Sprintf("node/pending_attestation_count")
 	attestationCount := new(int64)
-	_, err := s.api.New().Get(path).ReceiveSuccess(attestationCount)
+	resp, err := s.api.New().Get(path).ReceiveSuccess(attestationCount)
 	if err != nil {
 		return 0, err
+	}
+	if resp.StatusCode == 404 {
+		return 0, beacon.NotImplemented
 	}
 	return *attestationCount, nil
 }
